@@ -217,6 +217,10 @@ header{margin-bottom:36px;}
           <label class="sig-check"><input type="checkbox" id="sigLehrer" checked> Unterschrift Lehrkraft</label>
           <label class="sig-check"><input type="checkbox" id="sigBetrieb" checked> Bestätigung Ausbildungsbetrieb</label>
         </div>
+        <div style="margin-top:14px">
+          <div style="font-size:0.74rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Einzelausdrucke filtern</div>
+          <label class="sig-check"><input type="checkbox" id="filterSchlechte"> Nur Note 5 &amp; 6 drucken</label>
+        </div>
 
       </div>
     </div>
@@ -359,6 +363,7 @@ updateSchemaInfo();
 });
 document.getElementById('arbeitsTitel').addEventListener('input', rerender);
 document.getElementById('sigLehrer').addEventListener('change', rerender);
+document.getElementById('filterSchlechte').addEventListener('change', rerender);
 document.getElementById('sigBetrieb').addEventListener('change', rerender);
 
 function rerender() {
@@ -513,7 +518,11 @@ function renderPrint(students, fCols, gesamtMax) {
   const showLehrer=document.getElementById('sigLehrer').checked;
   const showBetrieb=document.getElementById('sigBetrieb').checked;
 
-  students.forEach(s=>{
+  const filterSchlechte = document.getElementById('filterSchlechte').checked;
+  const printStudents = filterSchlechte
+    ? students.filter(s => { const n=getNote(s.gesamt,gesamtMax); return n==='5'||n==='6'; })
+    : students;
+  printStudents.forEach(s=>{
     const {base:note, tendenz}=getTendenzNote(s.gesamt,gesamtMax);
     const pct=((s.gesamt/gesamtMax)*100).toFixed(1).replace('.',',');
     const chunks=[];
