@@ -190,8 +190,8 @@ header{margin-bottom:36px;}
         <!-- Notenspiegel Typ -->
         <div style="font-size:0.74rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">Notenspiegel</div>
         <div class="type-tabs">
-          <div class="type-tab active" data-type="linear">📐 Linear (Schule)</div>
-          <div class="type-tab" data-type="ihk">🏛 IHK</div>
+          <div class="type-tab" data-type="linear">📐 Linear (Schule)</div>
+          <div class="type-tab active" data-type="ihk">🏛 IHK</div>
           <div class="type-tab" data-type="custom">✏️ Individuell</div>
         </div>
 
@@ -283,7 +283,7 @@ const SCHEMAS = {
   }
 };
 
-let currentType = 'linear';
+let currentType = 'ihk';
 let currentData = null;
 
 // ── Notenspiegel holen ─────────────────────────────────────────────
@@ -469,7 +469,8 @@ function renderCards(students, fCols, gesamtMax) {
     ${['1','2','3','4','5','6'].map(n=>notenCount[n]?`<div class="avg-item"><span class="avg-label">Note ${n}</span><span class="avg-val note-${n}" style="font-size:0.95rem">${notenCount[n]}×</span></div>`:'').join('')}
   `;
 
-  students.forEach(s=>{
+  const sortedStudents = [...students].sort((a,b)=>a.nachname.localeCompare(b.nachname,"de"));
+  sortedStudents.forEach(s=>{
     const {base:note, tendenz}=getTendenzNote(s.gesamt,gesamtMax);
     const pct=Math.round((s.gesamt/gesamtMax)*100);
     const barColor=note<='2'?'#4ade80':note==='3'?'#38bdf8':note==='4'?'#fbbf24':'#f87171';
@@ -623,7 +624,8 @@ function renderOverview(students, fCols, gesamtMax) {
       <div class="ov-bar-count">${notenCount[n]}x ${notenCount[n]>0?'('+Math.round(notenCount[n]/students.length*100)+'%)':''}</div>
     </div>`;
   }).join('');
-  const tableRows = students.map(s => {
+  const sorted = [...students].sort((a,b) => a.nachname.localeCompare(b.nachname, "de"));
+  const tableRows = sorted.map(s => {
     const {base:note, tendenz} = getTendenzNote(s.gesamt,gesamtMax);
     const dez = dezimalNote(s.gesamt,gesamtMax);
     const pct = ((s.gesamt/gesamtMax)*100).toFixed(1).replace('.',',');
